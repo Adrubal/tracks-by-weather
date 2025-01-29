@@ -6,25 +6,49 @@ Globals:
     EndpointConfiguration: REGIONAL
 
 Resources:
+  TracksByWeatherApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Auth:
+        DefaultAuthorizer: Google-User-Auth
+        Authorizers:
+          Google-User-Auth:
+            UserPoolArn: arn:aws:cognito-idp:us-east-1:419615934907:userpool/us-east-1_NDI3fMPnZ
+            AuthorizationScopes:
+              - openid
+            Identity:
+              Header: Authorization
   TracksByWeatherFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: com.challenge.backend.StreamLambdaHandler::handleRequest
-      Runtime: java21
-      CodeUri: .
-      MemorySize: 512
+      Runtime: java17
+      CodeUri: target/tracks-by-weather-1.0-SNAPSHOT-lambda-package.zip
+      MemorySize: 2048
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 30
       Events:
         ProxyResource:
           Type: Api
           Properties:
+            RestApiId: !Ref TracksByWeatherApi
             Path: /{proxy+}
             Method: any
+  AccessTokenTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: AccessToken
+      PrimaryKey:
+        Name: app
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
 
 Outputs:
   TracksByWeatherApi:
     Description: URL for application
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/ping'
+    Value: !Sub 'https://${TracksByWeatherApi}.execute-api.${AWS::Region}.amazonaws.com/dev/track-list'
     Export:
       Name: TracksByWeatherApi
