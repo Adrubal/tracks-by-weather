@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class ExceptionResponse {
 
-    public int code;
-    public String message;
+    private int code;
+    private String message;
 }

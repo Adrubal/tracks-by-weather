@@ -17,6 +17,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class SpotifyService {
     @Value("${SPO_CLIENT_SECRET}")
     private String spoClientSecret;
 
-    private Random random;
+    private SecureRandom random;
 
     private String accessToken;
 
@@ -65,7 +66,7 @@ public class SpotifyService {
 
     @PostConstruct
     private void postConstruct() {
-        random = new Random();
+        random = new SecureRandom();
     }
 
     public TrackListResponseDto getTrackListByWeather(Double currentWeather) throws JsonProcessingException {
