@@ -24,7 +24,7 @@ import java.io.InputStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-public class StreamLambdaHandlerTest {
+class StreamLambdaHandlerTest {
 
     private static StreamLambdaHandler handler;
     private static Context lambdaContext;
@@ -39,7 +39,7 @@ public class StreamLambdaHandlerTest {
     }
 
     @Test
-    public void invalidResource_streamRequest_responds404() {
+    void invalidResource_streamRequest_responds404() {
         InputStream requestStream = new AwsProxyRequestBuilder("/invalid", HttpMethod.GET)
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
                 .buildStream();

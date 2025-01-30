@@ -2,9 +2,9 @@ package com.challenge.backend.service;
 
 import com.challenge.backend.model.dto.AccessTokenDto;
 import com.challenge.backend.model.dto.TrackListResponseDto;
-import com.challenge.backend.model.dto.WeatherTrackListRequestDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -35,13 +35,22 @@ class SpotifyServiceTest {
     @Mock
     private AccessTokenService accessTokenService;
 
-    @Test
-    public void getTrackListByWeatherTest() throws JsonProcessingException {
-
+    @BeforeEach
+    void beforeEach() {
         ReflectionTestUtils.setField(spotifyService, "appName", "spotify");
         ReflectionTestUtils.setField(spotifyService, "random", new SecureRandom());
         ReflectionTestUtils.setField(spotifyService, "spotifyUrl", "https://api.spotify.com/v1/search?q=genre:{genre}&type=track&limit={limit}&offset={offset}");
         ReflectionTestUtils.setField(spotifyService, "limit", 20);
+    }
+
+    @Test
+    void getTrackListByWeatherTest() throws JsonProcessingException {
+
+        AccessTokenDto accessTokenDto = new AccessTokenDto();
+        accessTokenDto.setToken("token");
+
+        accessTokenDto.setCreationDate(LocalDateTime.now().minusMinutes(20));
+        Mockito.when(accessTokenService.getAccessToken(ArgumentMatchers.anyString())).thenReturn(Optional.of(accessTokenDto));
 
         Mockito.when(restTemplate
                         .exchange(ArgumentMatchers.anyString(),
@@ -62,23 +71,14 @@ class SpotifyServiceTest {
                         "  }" +
                         "}", HttpStatus.OK));
 
-        AccessTokenDto accessTokenDto = new AccessTokenDto();
-        accessTokenDto.setToken("token");
-
-        accessTokenDto.setCreationDate(LocalDateTime.now().minusMinutes(20));
-        Mockito.when(accessTokenService.getAccessToken(ArgumentMatchers.anyString())).thenReturn(Optional.of(accessTokenDto));
-
         TrackListResponseDto trackListByWeather = spotifyService.getTrackListByWeather(35D);
         Assertions.assertNotNull(trackListByWeather);
+        Assertions.assertEquals("cumbia", trackListByWeather.getGenre());
     }
 
     @Test
-    public void getTrackListByWeatherTest_No_access_token() throws JsonProcessingException {
+    void getTrackListByWeatherTest_No_access_token() throws JsonProcessingException {
 
-        ReflectionTestUtils.setField(spotifyService, "appName", "spotify");
-        ReflectionTestUtils.setField(spotifyService, "random", new SecureRandom());
-        ReflectionTestUtils.setField(spotifyService, "spotifyUrl", "https://api.spotify.com/v1/search?q=genre:{genre}&type=track&limit={limit}&offset={offset}");
-        ReflectionTestUtils.setField(spotifyService, "limit", 20);
         ReflectionTestUtils.setField(spotifyService, "spotifyRequestAccessTokenUrl", "https://accounts.spotify.com/api/token");
 
         Mockito.when(restTemplate
@@ -115,5 +115,110 @@ class SpotifyServiceTest {
 
         TrackListResponseDto trackListByWeather = spotifyService.getTrackListByWeather(35D);
         Assertions.assertNotNull(trackListByWeather);
+        Assertions.assertEquals("cumbia", trackListByWeather.getGenre());
+    }
+
+    @Test
+    void getTrackListByWeatherTest_pop_genre() throws JsonProcessingException {
+
+        Mockito.when(restTemplate
+                        .exchange(ArgumentMatchers.anyString(),
+                                ArgumentMatchers.any(HttpMethod.class),
+                                ArgumentMatchers.<HttpEntity<?>>any(),
+                                ArgumentMatchers.<Class<String>>any(),
+                                ArgumentMatchers.anyString(),
+                                ArgumentMatchers.anyInt(),
+                                ArgumentMatchers.anyInt()))
+                .thenReturn(new ResponseEntity<>("{\"tracks\": " +
+                        "{\"items\": " +
+                        "   [" +
+                        "       {\"external_urls\": " +
+                        "           {\"spotify\": \"https://open.spotify.com/track/1PINN6x0Riouab3wPSglpp\"" +
+                        "           }," +
+                        "           \"name\": \"An Idea\"}" +
+                        "   ]" +
+                        "  }" +
+                        "}", HttpStatus.OK));
+
+        AccessTokenDto accessTokenDto = new AccessTokenDto();
+        accessTokenDto.setToken("token");
+
+        accessTokenDto.setCreationDate(LocalDateTime.now().minusMinutes(20));
+        Mockito.when(accessTokenService.getAccessToken(ArgumentMatchers.anyString())).thenReturn(Optional.of(accessTokenDto));
+
+        TrackListResponseDto trackListByWeather = spotifyService.getTrackListByWeather(25D);
+        Assertions.assertNotNull(trackListByWeather);
+        Assertions.assertEquals("pop", trackListByWeather.getGenre());
+    }
+
+    @Test
+    void getTrackListByWeatherTest_rock_genre() throws JsonProcessingException {
+
+        Mockito.when(restTemplate
+                        .exchange(ArgumentMatchers.anyString(),
+                                ArgumentMatchers.any(HttpMethod.class),
+                                ArgumentMatchers.<HttpEntity<?>>any(),
+                                ArgumentMatchers.<Class<String>>any(),
+                                ArgumentMatchers.anyString(),
+                                ArgumentMatchers.anyInt(),
+                                ArgumentMatchers.anyInt()))
+                .thenReturn(new ResponseEntity<>("{\"tracks\": " +
+                        "{\"items\": " +
+                        "   [" +
+                        "       {\"external_urls\": " +
+                        "           {\"spotify\": \"https://open.spotify.com/track/1PINN6x0Riouab3wPSglpp\"" +
+                        "           }," +
+                        "           \"name\": \"An Idea\"}" +
+                        "   ]" +
+                        "  }" +
+                        "}", HttpStatus.OK));
+
+        AccessTokenDto accessTokenDto = new AccessTokenDto();
+        accessTokenDto.setToken("token");
+
+        accessTokenDto.setCreationDate(LocalDateTime.now().minusMinutes(20));
+        Mockito.when(accessTokenService.getAccessToken(ArgumentMatchers.anyString())).thenReturn(Optional.of(accessTokenDto));
+
+        TrackListResponseDto trackListByWeather = spotifyService.getTrackListByWeather(13D);
+        Assertions.assertNotNull(trackListByWeather);
+        Assertions.assertEquals("rock", trackListByWeather.getGenre());
+    }
+
+    @Test
+    void getTrackListByWeatherTest_classic_genre() throws JsonProcessingException {
+
+        ReflectionTestUtils.setField(spotifyService, "appName", "spotify");
+        ReflectionTestUtils.setField(spotifyService, "random", new SecureRandom());
+        ReflectionTestUtils.setField(spotifyService, "spotifyUrl", "https://api.spotify.com/v1/search?q=genre:{genre}&type=track&limit={limit}&offset={offset}");
+        ReflectionTestUtils.setField(spotifyService, "limit", 20);
+
+        Mockito.when(restTemplate
+                        .exchange(ArgumentMatchers.anyString(),
+                                ArgumentMatchers.any(HttpMethod.class),
+                                ArgumentMatchers.<HttpEntity<?>>any(),
+                                ArgumentMatchers.<Class<String>>any(),
+                                ArgumentMatchers.anyString(),
+                                ArgumentMatchers.anyInt(),
+                                ArgumentMatchers.anyInt()))
+                .thenReturn(new ResponseEntity<>("{\"tracks\": " +
+                        "{\"items\": " +
+                        "   [" +
+                        "       {\"external_urls\": " +
+                        "           {\"spotify\": \"https://open.spotify.com/track/1PINN6x0Riouab3wPSglpp\"" +
+                        "           }," +
+                        "           \"name\": \"An Idea\"}" +
+                        "   ]" +
+                        "  }" +
+                        "}", HttpStatus.OK));
+
+        AccessTokenDto accessTokenDto = new AccessTokenDto();
+        accessTokenDto.setToken("token");
+
+        accessTokenDto.setCreationDate(LocalDateTime.now().minusMinutes(20));
+        Mockito.when(accessTokenService.getAccessToken(ArgumentMatchers.anyString())).thenReturn(Optional.of(accessTokenDto));
+
+        TrackListResponseDto trackListByWeather = spotifyService.getTrackListByWeather(9D);
+        Assertions.assertNotNull(trackListByWeather);
+        Assertions.assertEquals("classic", trackListByWeather.getGenre());
     }
 }

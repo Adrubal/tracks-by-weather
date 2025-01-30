@@ -5,7 +5,6 @@ import com.challenge.backend.model.dto.TrackListResponseDto;
 import com.challenge.backend.model.dto.WeatherTrackListRequestDto;
 import com.challenge.backend.model.entity.TracksByWeatherStatistics;
 import com.challenge.backend.repository.TracksByWeatherStatisticsRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +27,7 @@ class AnalyticsServiceTest {
     private TracksByWeatherStatisticsRepository tracksByWeatherStatisticsRepository;
 
     @Test
-    public void getWeatherByCityTest() throws JsonProcessingException {
+    void saveAnalyticsTest() {
 
         Gson gson = new Gson();
 

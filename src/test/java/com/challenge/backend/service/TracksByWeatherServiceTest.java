@@ -30,7 +30,7 @@ class TracksByWeatherServiceTest {
     private AnalyticsService analyticsService;
 
     @Test
-    public void getTrackListTest() throws JsonProcessingException {
+    void getTrackListTest() throws JsonProcessingException {
 
         TrackListResponseDto trackListByWeather = new TrackListResponseDto();
         trackListByWeather.setGenre("rock");

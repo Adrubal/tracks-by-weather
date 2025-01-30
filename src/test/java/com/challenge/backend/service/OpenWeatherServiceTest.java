@@ -25,7 +25,7 @@ class OpenWeatherServiceTest {
     private RestTemplate restTemplate;
 
     @Test
-    public void getWeatherByCityTest() throws JsonProcessingException {
+    void getWeatherByCityTest() throws JsonProcessingException {
 
         ReflectionTestUtils.setField(openWeatherService, "openWeatherUrlCity", "https://api.openweathermap.org/data/2.5/weather?q={cityName}&appid={appid}&units={units}");
         ReflectionTestUtils.setField(openWeatherService, "appid", "123");
@@ -46,7 +46,7 @@ class OpenWeatherServiceTest {
     }
 
     @Test
-    public void getWeatherByCoordsTest() throws JsonProcessingException {
+    void getWeatherByCoordsTest() throws JsonProcessingException {
 
         ReflectionTestUtils.setField(openWeatherService, "openWeatherUrlCoords", "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={appid}&units={units}");
         ReflectionTestUtils.setField(openWeatherService, "appid", "123");
