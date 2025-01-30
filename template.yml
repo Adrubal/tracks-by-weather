@@ -10,6 +10,7 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: dev
+      TracingEnabled: true
       Auth:
         DefaultAuthorizer: Google-User-Auth
         Authorizers:
@@ -25,9 +26,12 @@ Resources:
       Handler: com.challenge.backend.StreamLambdaHandler::handleRequest
       Runtime: java17
       CodeUri: target/tracks-by-weather-1.0-SNAPSHOT-lambda-package.zip
-      MemorySize: 2048
+      MemorySize: 3008
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 30
+      SnapStart:
+        ApplyOn: PublishedVersions
+      Tracing: Active
       Events:
         ProxyResource:
           Type: Api
