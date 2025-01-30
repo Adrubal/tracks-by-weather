@@ -26,7 +26,7 @@ public class TracksByWeatherService {
         log.info("Getting track list - {}", request);
         double currentWeather = openWeatherService.getWeather(request);
         TrackListResponseDto trackListByWeather = spotifyService.getTrackListByWeather(currentWeather);
-        analyticsService.saveAnalytics(request, currentWeather, trackListByWeather.getTrackList());
+        analyticsService.saveAnalytics(request, currentWeather, trackListByWeather);
 
         WeatherTrackListResponseDto response = new WeatherTrackListResponseDto();
         response.setCurrentWeather(currentWeather);

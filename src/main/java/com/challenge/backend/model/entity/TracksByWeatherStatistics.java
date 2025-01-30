@@ -20,5 +20,6 @@ public class TracksByWeatherStatistics {
     private Double lat;
     private Double lon;
     private String tracks;
+    private String genre;
 
 }
